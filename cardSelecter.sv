@@ -15,12 +15,12 @@ module card_lfsr (
     logic        feedback;
     logic [3:0]  rank;                 // 0..12  (0=A, 1..8 = 2..9, 9..12 = 10,J,Q,K)
 
-    // Maximal-length taps for 16 bits (16,15,13,4): visits all 65535 non-zero states.
-    assign feedback = state[15] ^ state[14] ^ state[12] ^ state[3];
-
     always_ff @(posedge clk) begin
         if (rst) state <= 16'h0001;
-        else     state <= {state[14:0], feedback};   // shift left, feedback enters at bit 0
+        else begin
+            assign feedback = state[15] ^ state[14] ^ state[12] ^ state[3]; // Maximal-length taps for 16 bits (16,15,13,4): visits all 65535 non-zero states.
+            state <= {state[14:0], feedback};   // shift left, feedback enters at bit 0'
+        end
     end
 
     // Turn the random number into one of 13 ranks
